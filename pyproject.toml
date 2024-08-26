@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "tech-news-summary"
+version = "0.1.0"
+description = ""
+authors = ["Yao-Po Wang <blue119@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+httpx = "^0.27.0"
+phidata = "^2.4.29"
+openai = "^1.42.0"
+pyyaml = "^6.0.2"
+ipython = "^8.26.0"
+requests = "^2.32.3"
+ollama = "^0.3.1"
+python-telegram-bot = "^21.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
