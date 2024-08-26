@@ -103,7 +103,7 @@ here is comments
 """
 
 
-def main(n_of_story=7):
+def main(n_of_story=5):
     try:
         with open("ids_cache.pkl", "rb") as file:
             ids_cache = pickle.load(file)
@@ -118,8 +118,7 @@ def main(n_of_story=7):
         cfg = yaml.safe_load(file)
 
     assistant = Assistant(
-        llm=OpenAIChat(model="gpt-4o-mini", max_tokens=500, temperature=0.5),
-        api_key=cfg["openai"]["api_key"],
+        llm=OpenAIChat(model="gpt-4o-mini", max_tokens=500, temperature=0.5, api_key=cfg["openai"]["api_key"]),
         debug_mode=False,
         markdown=True,
     )
