@@ -6,7 +6,7 @@ authors = ["Yao-Po Wang <blue119@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11.4"
 httpx = "^0.27.0"
 phidata = "^2.4.29"
 openai = "^1.42.0"

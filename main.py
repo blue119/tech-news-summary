@@ -63,28 +63,30 @@ def get_top_hackernews_stories_n_comments(
 
     # Fetch top story IDs
     resp = httpx.get("https://hacker-news.firebaseio.com/v0/topstories.json")
-    story_ids = resp.json()
+    story_ids = [id for id in resp.json() if id not in ids_cache]
 
-    # Fetch story details
     stories = []
-    for story_id in story_ids[:num_stories]:
-        if story_id in ids_cache:
-            print("Skip", story_id)
-            continue
-        story_response = httpx.get(
-            f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"
-        )
-        story = story_response.json()
-        print(story["title"])
+
+    for sid in story_ids:
+        res = httpx.get(f"https://hacker-news.firebaseio.com/v0/item/{sid}.json")
+        js = res.json()
+        stories.append((js.get("score", 0), js))
+
+    stories = sorted(stories, key=lambda x: x[0], reverse=True)
+
+    res = []
+    for score, story in stories[:num_stories]:
+
+        print(f"score({score}): {story['title']}")
         comments = _walk_thru_comments(
             [], story.get("kids", []), num_comments, max_comment_level
         )
 
         story["comments"] = _sort_comments(comments)
 
-        stories.append(story)
+        res.append(story)
 
-    return stories
+    return res
 
 
 prompt = """
@@ -118,7 +120,12 @@ def main(n_of_story=5):
         cfg = yaml.safe_load(file)
 
     assistant = Assistant(
-        llm=OpenAIChat(model="gpt-4o-mini", max_tokens=500, temperature=0.5, api_key=cfg["openai"]["api_key"]),
+        llm=OpenAIChat(
+            model="gpt-4o-mini",
+            max_tokens=500,
+            temperature=0.5,
+            api_key=cfg["openai"]["api_key"],
+        ),
         debug_mode=False,
         markdown=True,
     )
@@ -137,6 +144,8 @@ def main(n_of_story=5):
     
         {t['title']} ({t['score']}/{t['descendants']})
     
+        Comments: https://news.ycombinator.com/item?id={t['id']}
+
         ● {comments['en']}
     
         ● {comments['zh']}
